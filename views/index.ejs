@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- should include bootstrap -->
+    <!-- should include jquery -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>-->
+    <!-- <link rel="stylesheet" type="text/css" href="stylesheets/spectre.min.css" /> -->
+    <!-- <link rel="stylesheet" type="text/css" href="stylesheets/spectre-icons.min.css" /> -->
+    <!-- <link rel="stylesheet" type="text/css" href="stylesheets/style.css" /> -->
+
+    <title>BYUKA URI MILLIONAIRE</title>
+    <style>
+        html {
+            font-size: 18px;
+            /* color: #22baa0; */
+        }
+        body {
+            /* padding: 2rem 0;
+             */
+             display: flex;
+             flex-flow: column;
+             justify-content: center;
+             height: 100vh;
+        }
+        .logo, .winner, .button{
+            display: flex;
+            flex-flow: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo {
+            margin-bottom: 4rem;
+        }
+
+        .winner p {
+            width: 800px;
+            height: 150px;
+            border: none;
+            /* outline: none; */
+            font-size: 10rem;
+            box-shadow: 0 0 5px #ddd;
+            margin: 0 0 4rem 0;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bolder;
+            /* vertical-align: middle; */
+        }
+        .button button {
+            border: none;
+            background: red;
+            color: #fff;
+            padding: 1rem 8rem;
+            font-size: 1rem;
+            font-weight: bolder;
+            border-radius: 1rem;
+        }
+
+        .father {
+            display: flex;
+            flex-flow: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+        .father .airtel-logo {
+            flex: 1 auto;   
+        }
+        .father p {
+            margin: 0;
+            flex: 2 800px;
+            height: 230px;
+            border: none;
+            /* outline: none; */
+            font-size: 10rem;
+            box-shadow: 0 0 5px #ddd;
+            /* margin: 0 0 4rem 0; */
+            /* padding: 1rem; */
+            text-align: center;
+            font-weight: bolder;
+        }
+        .father .button {
+            display: flex;
+            flex-flow: row;
+        }
+        .father .button>.left {
+            flex: 1 400px;
+        }
+        .father .button>.right {
+            flex: 2 800px;
+            display: flex;
+            flex-flow: row;
+            justify-content: center;    
+        }
+    </style>
+</head>
+<body>
+    <div class="father">
+        <div class="airtel-logo">
+            <img src="/static/images/images.png" width="400" height="400"> 
+        </div>
+        <p name="username" id="username"></p>
+    </div>
+    <div class="button">
+        <div class="left"></div>
+        <div class="right">
+            <!-- <button class="btn-block btn btn-primary bg-brown text-white"  name="total" id="total">Draw Winner</button> -->
+            <button class="btn-block btn btn-primary bg-brown text-white"  name="start" id="start-draw">Draw Winner</button>
+        </div>
+    </div>
+<!-- 
+    <div class="parent">
+        <div class="logo">
+            <img src="images/images.png" width="300" height="300"> 
+        </div>
+        <div class="winner">
+            <p name="username" id="username"></p>
+        </div>
+        <div class="button">
+            <button class="btn-block btn btn-primary bg-brown text-white"  name="total" id="total">Draw Winner</button>
+        </div>
+    </div> -->
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax6/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function () {
+            var stopSetInterval;
+            let $username = $('#username');
+            function displayRandomVal(){
+                return $.ajax({
+                    type: 'GET',
+                    url: '/users/displayphone',
+                    success: response => {
+                        console.log(response);
+                        let result = response.length;
+                        let randomIndex = Math.floor(Math.random() * result.length);
+                        let randomVal = result[randomIndex].agentsMSISDN;
+                        $username.text(randomVal);
+                       
+                    },
+                    error : err => {
+                        console.log(err);
+                    }
+                });
+            };
+            function deleteWinner(number) {
+                $.ajax({
+                    url: "/users/delete/"+number,
+                    //data: {
+                      //  winner: number
+                    //},
+                    success: response => {
+                        console.log(response);
+                    },
+                    error: err => {
+                        console.log(err);
+                    }
+                })
+            };
+            $('#start-draw').on('click',  async ()=>{
+                let btnState = $("#start-draw").text();              
+                if(btnState === "Draw Winner") {
+                   stopSetInterval = setInterval(()=>{
+                     displayRandomVal();
+                   }, 100);
+                    $('#start-draw').text('Stop');
+                }else {
+                    clearInterval(stopSetInterval);
+                    await displayRandomVal();
+                    deleteWinner($username.text());
+                    $('#start-draw').text('Draw Winner');
+                }
+            })
+
+            var output = $("#username");
+            $('#total').on('click', function(){
+                
+                //perform ajax call here
+                // console.log("Val", $(this).val())
+                // debugger
+                // var value = $(this).val();
+                // var $that = $(this);
+                // if(output) { ? 
+                    $.get("/users/randomphone_count").then(function(res) { // res
+                    
+                    // output.val("123");
+                        if(res && res.random) {
+                            output.text(res.random);
+                            //output.text(res);
+                        }
+                        // else {
+                            // console.log("Ths", $(this))
+                            // $that.val(value.substring(0,value.length-1));
+                            // output.text(res);
+                        // }
+                    }).catch(function(err) {
+                        throw err;
+
+                    });
+                // }
+            });
+        })
+    </script>
+</body>
+</html>
